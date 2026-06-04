@@ -1,0 +1,6 @@
+{
+  "name": "Family Kurd",
+  "description": "Advanced Patrilineal Family Tree Builder by Shivan Haji. Support for male-only descent representation, RTL layout, local storage, panning/zooming, table editing, full screen mode, and image galleries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
