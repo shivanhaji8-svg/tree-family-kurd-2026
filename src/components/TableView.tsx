@@ -113,9 +113,10 @@ export default function TableView({
 
   // Apply search query and filters
   const filteredList = useMemo(() => {
+    const isSearchActive = searchQuery.trim() !== '' || birthPlaceFilter !== '';
     return structuredList.filter(({ person, isHidden }) => {
-      // If hidden by parent expand/collapse toggle, hide it
-      if (isHidden) return false;
+      // If hidden by parent expand/collapse toggle and no search query is active, hide it
+      if (isHidden && !isSearchActive) return false;
 
       // Search matching Name, Birthplace or notes
       const matchesSearch =

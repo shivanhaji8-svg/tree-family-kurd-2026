@@ -31,12 +31,17 @@ export default function TreeView({
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [hasInitializedExpanded, setHasInitializedExpanded] = useState(false);
+
   // Initialize ALL nodes as expanded by default on first load
   useEffect(() => {
-    if (members.length > 0 && expandedNodes.size === 0) {
+    if (members.length > 0 && !hasInitializedExpanded) {
       setExpandedNodes(new Set(members.map((m) => m.id)));
+      setHasInitializedExpanded(true);
+    } else if (members.length === 0 && hasInitializedExpanded) {
+      setHasInitializedExpanded(false);
     }
-  }, [members]);
+  }, [members, hasInitializedExpanded]);
 
   // Handle single node expand/collapse toggle
   const toggleNodeExpansion = (id: string, e: React.MouseEvent) => {
@@ -79,8 +84,9 @@ export default function TreeView({
 
   // Run initial centering after mounted or workspace loads
   useEffect(() => {
-    setTimeout(handleCenterView, 100);
-  }, [members.length === 0]);
+    const timer = setTimeout(handleCenterView, 120);
+    return () => clearTimeout(timer);
+  }, [members.length]);
 
   // Zoom Helpers
   const handleZoomIn = () => {
@@ -236,7 +242,7 @@ export default function TreeView({
           <defs>
             <linearGradient id="treeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#24B1B1" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#24B1B1" stopOpacity="0.15" stopDelay="1" />
+              <stop offset="100%" stopColor="#24B1B1" stopOpacity="0.15" />
             </linearGradient>
             <marker
               id="dot-marker"

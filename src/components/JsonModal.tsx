@@ -22,7 +22,7 @@ export default function JsonModal({
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isValid, setIsValid] = useState(true);
 
-  // Initialize textarea with current JSON data when opening the modal
+  // Initialize textarea with current JSON data ONLY when the modal transitions to open state
   useEffect(() => {
     if (isOpen) {
       const formatted = JSON.stringify(currentData, null, 2);
@@ -31,7 +31,9 @@ export default function JsonModal({
       setIsValid(true);
       setCopied(false);
     }
-  }, [isOpen, currentData]);
+    // We only initialize the workspace on modal open to prevent overwriting active typing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
