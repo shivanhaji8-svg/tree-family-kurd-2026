@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { ZoomIn, ZoomOut, Maximize2, UserPlus, Trash2, Edit3, ChevronDown, ChevronUp, User, Clock, Map } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, UserPlus, Trash2, Edit3, ChevronDown, ChevronUp, User, Clock, Map, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
 import { Person, ViewportState } from '../types';
 import { computeTreeLayout, PositionedNode, ConnectorLine } from '../utils/treeLayout';
 
@@ -11,6 +11,8 @@ interface TreeViewProps {
   onContextMenu: (e: React.MouseEvent, person: Person | null) => void;
   highlightQuery?: string;
   isRtl?: boolean;
+  expandedNodes: Set<string>;
+  setExpandedNodes: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
 export default function TreeView({
@@ -21,27 +23,16 @@ export default function TreeView({
   onContextMenu,
   highlightQuery = '',
   isRtl = true,
+  expandedNodes,
+  setExpandedNodes,
 }: TreeViewProps) {
   const [viewport, setViewport] = useState<ViewportState>({ x: 100, y: 50, zoom: 0.85 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const [editNameValue, setEditNameValue] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const [hasInitializedExpanded, setHasInitializedExpanded] = useState(false);
-
-  // Initialize ALL nodes as expanded by default on first load
-  useEffect(() => {
-    if (members.length > 0 && !hasInitializedExpanded) {
-      setExpandedNodes(new Set(members.map((m) => m.id)));
-      setHasInitializedExpanded(true);
-    } else if (members.length === 0 && hasInitializedExpanded) {
-      setHasInitializedExpanded(false);
-    }
-  }, [members, hasInitializedExpanded]);
 
   // Handle single node expand/collapse toggle
   const toggleNodeExpansion = (id: string, e: React.MouseEvent) => {
@@ -53,6 +44,14 @@ export default function TreeView({
       next.add(id);
     }
     setExpandedNodes(next);
+  };
+
+  const handleExpandAll = () => {
+    setExpandedNodes(new Set(members.map((m) => m.id)));
+  };
+
+  const handleCollapseAll = () => {
+    setExpandedNodes(new Set());
   };
 
   // Compute Layout positions
@@ -497,6 +496,23 @@ export default function TreeView({
           className="p-2 hover:bg-slate-100 rounded-lg text-slate-700 cursor-pointer transition-colors"
         >
           <Maximize2 size={16} />
+        </button>
+
+        <div className="border-t border-slate-100 my-0.5" />
+
+        <button
+          onClick={handleExpandAll}
+          title={isRtl ? 'کردنەوەی هەموو ناوەکان' : 'Expand All'}
+          className="p-2 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg text-slate-700 cursor-pointer transition-colors"
+        >
+          <ChevronsUpDown size={16} />
+        </button>
+        <button
+          onClick={handleCollapseAll}
+          title={isRtl ? 'گرتنەوەی هەموو ناوەکان' : 'Collapse All'}
+          className="p-2 hover:bg-amber-50 hover:text-amber-600 rounded-lg text-slate-700 cursor-pointer transition-colors"
+        >
+          <ChevronsDownUp size={16} />
         </button>
         
         {/* Zoom Value indicator */}

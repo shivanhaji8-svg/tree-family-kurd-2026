@@ -131,6 +131,19 @@ export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('tree');
   const [isWorkspaceFullScreen, setIsWorkspaceFullScreen] = useState(false);
   
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const [hasInitializedExpanded, setHasInitializedExpanded] = useState(false);
+
+  // Initialize ALL nodes as expanded by default on first load or when database loads
+  useEffect(() => {
+    if (members.length > 0 && !hasInitializedExpanded) {
+      setExpandedNodes(new Set(members.map((m) => m.id)));
+      setHasInitializedExpanded(true);
+    } else if (members.length === 0 && hasInitializedExpanded) {
+      setHasInitializedExpanded(false);
+    }
+  }, [members, hasInitializedExpanded]);
+  
   // Highlighting & Search inside Tree View Canvas
   const [canvasSearchQuery, setCanvasSearchQuery] = useState('');
 
@@ -174,6 +187,8 @@ export default function App() {
 
   const seedInitialTree = () => {
     setProjectName('شێجەرەی خێزانی کورد');
+    setHasInitializedExpanded(false);
+    setExpandedNodes(new Set());
     setMembers(SEED_MEMBERS);
     setPhotos(SEED_PHOTOS);
     const seedTime = new Date().toLocaleTimeString();
@@ -468,6 +483,8 @@ export default function App() {
           if (Array.isArray(parsed.members)) {
             const sanitizedImportPhotos = sanitizePhotos(parsed.photos);
             setProjectName(parsed.projectName || 'شێجەرەی هاوردەکراو');
+            setHasInitializedExpanded(false);
+            setExpandedNodes(new Set());
             setMembers(parsed.members);
             setPhotos(sanitizedImportPhotos);
             setLastSaved(new Date().toLocaleTimeString());
@@ -492,12 +509,12 @@ export default function App() {
 
   // Export current tree as high-res JPG image (Per user request: 'وینەکە کوالیتی بەرزتربیت + JPG')
   const handleExportImage = () => {
-    exportTreeAsImage(members, projectName, authorName, phoneNumber, isRtl, 'jpg');
+    exportTreeAsImage(members, projectName, authorName, phoneNumber, isRtl, 'jpg', expandedNodes);
   };
 
   // Export current tree as infinite vector SVG (Per user request: 'سەیفکردن svg بکریت')
   const handleExportSVG = () => {
-    exportTreeAsSVG(members, projectName, authorName, phoneNumber, isRtl);
+    exportTreeAsSVG(members, projectName, authorName, phoneNumber, isRtl, expandedNodes);
   };
 
   // Export current list to printer
@@ -863,6 +880,8 @@ export default function App() {
                 onContextMenu={handleWorkspaceContextMenu}
                 highlightQuery={canvasSearchQuery}
                 isRtl={isRtl}
+                expandedNodes={expandedNodes}
+                setExpandedNodes={setExpandedNodes}
               />
             ) : (
               <TableView

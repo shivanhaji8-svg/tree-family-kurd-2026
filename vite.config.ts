@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: process.env.GITHUB_ACTIONS === 'true' ? '/tree-family-kurd-2026/' : './',
+    base: process.env.GITHUB_ACTIONS === 'true' ? '/tree-family-kurd-2026/' : '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

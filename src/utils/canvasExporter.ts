@@ -7,12 +7,13 @@ export function exportTreeAsImage(
   developerName: string,
   developerPhone: string,
   isRtl: boolean = true,
-  format: 'jpg' | 'png' = 'jpg'
+  format: 'jpg' | 'png' = 'jpg',
+  expandedNodes?: Set<string>
 ) {
   if (members.length === 0) return;
 
-  // Compute Layout with all nodes expanded for export
-  const expanded = new Set(members.map((m) => m.id));
+  // Compute Layout with current expanded nodes (fallback to all expanded if not provided)
+  const expanded = expandedNodes || new Set(members.map((m) => m.id));
   const { nodes, connectors, width, height } = computeTreeLayout(members, expanded);
 
   // Create Canvas element
@@ -189,12 +190,13 @@ export function exportTreeAsSVG(
   projectName: string,
   developerName: string,
   developerPhone: string,
-  isRtl: boolean = true
+  isRtl: boolean = true,
+  expandedNodes?: Set<string>
 ) {
   if (members.length === 0) return;
 
-  // Compute Layout with all nodes expanded for export
-  const expanded = new Set(members.map((m) => m.id));
+  // Compute Layout with current expanded nodes (fallback to all expanded if not provided)
+  const expanded = expandedNodes || new Set(members.map((m) => m.id));
   const { nodes, connectors, width, height } = computeTreeLayout(members, expanded);
 
   const totalHeight = height + 140;
